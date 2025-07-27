@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,7 +41,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
@@ -52,9 +53,25 @@ public class UserController {
         return ResponseEntity.ok("Usuario creado");
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable UUID id, @Valid @RequestBody RegisterRequest request) {
+        Optional<User> existingUser = userService.getUserById(id);
+        if (existingUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User user = existingUser.get();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+        userService.saveUser(user);
+
+        return ResponseEntity.ok("Usuario actualizado");
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
+    public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
         userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Usuario eliminado");
     }
 }

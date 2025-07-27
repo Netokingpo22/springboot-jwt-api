@@ -1,9 +1,12 @@
 package com.ernesto.springboot_jwt_api.model;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +15,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,36 +22,29 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-
 @Entity
-@Table(name = "users")
+@Table(name = "tasks")
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class User {
-
+public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "user_id", columnDefinition = "BINARY(16)", updatable = false, nullable = false)
+    @Column(name = "task_id", columnDefinition = "BINARY(16)", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(nullable = false, unique = true, length = 50)
-    private String username;
-
-    @Column(nullable = false, unique = true, length = 100)
-    private String email;
-
     @Column(nullable = false, length = 100)
-    private String password;
+    private String title;
 
-    @OneToMany(mappedBy = "user")
-    @JsonManagedReference
-    private List<Task> tasks;
+    @Column(nullable = false, length = 500)
+    private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
+    private User user;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
