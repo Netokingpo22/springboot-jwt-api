@@ -10,4 +10,6 @@ import com.ernesto.springboot_jwt_api.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findById(UUID id);
+
+    Optional<User> findByUsername(String username);
 }

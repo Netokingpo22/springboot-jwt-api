@@ -42,30 +42,17 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
-        User user = User.builder()
-                .username(request.getUsername())
-                .email(request.getEmail())
-                .password(request.getPassword())
-                .build();
-
-        userService.saveUser(user);
+        userService.saveUser(request);
 
         return ResponseEntity.ok("Usuario creado");
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateUser(@PathVariable UUID id, @Valid @RequestBody RegisterRequest request) {
-        Optional<User> existingUser = userService.getUserById(id);
-        if (existingUser.isEmpty()) {
-            return ResponseEntity.notFound().build();
+        Optional<User> updatedUser = userService.updateUser(id, request);
+        if (updatedUser.isEmpty()) {
+            return ResponseEntity.status(404).body("Usuario no encontrado");
         }
-
-        User user = existingUser.get();
-        user.setUsername(request.getUsername());
-        user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
-        userService.saveUser(user);
-
         return ResponseEntity.ok("Usuario actualizado");
     }
 
