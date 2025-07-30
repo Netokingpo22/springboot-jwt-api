@@ -4,6 +4,13 @@ import com.ernesto.springboot_jwt_api.dto.AuthenticationRequest;
 import com.ernesto.springboot_jwt_api.dto.AuthenticationResponse;
 import com.ernesto.springboot_jwt_api.security.JwtUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Autenticación", description = "Operaciones de autenticación y generación de JWT")
 public class AuthenticationController {
 
     @Autowired
@@ -22,6 +30,10 @@ public class AuthenticationController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Operation(summary = "Login de usuario", description = "Autentica al usuario y genera un token JWT válido", requestBody = @RequestBody(required = true, content = @Content(schema = @Schema(implementation = AuthenticationRequest.class))), responses = {
+            @ApiResponse(responseCode = "200", description = "Autenticación exitosa", content = @Content(schema = @Schema(implementation = AuthenticationResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Credenciales inválidas", content = @Content(mediaType = "text/plain"))
+    })
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthenticationRequest authRequest) {
         try {
